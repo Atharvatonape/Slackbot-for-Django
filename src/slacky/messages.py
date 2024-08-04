@@ -7,7 +7,7 @@ def send_message(message, channel_id =None, user_id =None):
     url ="https://slack.com/api/chat.postMessage"
     headers = {
         'Content-type' : "application/json; charset=utf-8",
-        'Authorization' : f"Bearer {SLACK}",
+        'Authorization' : f"Bearer {SLACK_BOT_OAUTH_TOKEN}",
         "Accept":"application/json"
     }
     if user_id is not None:
