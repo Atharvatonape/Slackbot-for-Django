@@ -8,6 +8,7 @@ import helpers
 import slacky
 import pprint
 
+from .tasks import slack_message_task
 
 @csrf_exempt
 @require_POST
@@ -39,6 +40,15 @@ def slack_events_endpoint(request):
         user_id = event.get('user')
         channel_id = event.get('channel')
         msg_ts = event.get('ts')
-        r = slacky.send_message(msg_text, channel_id=channel_id, user_id=user_id)
+        thread_ts = event.get("thread_ts") or msg_ts
+        # r = slacky.send_message(msg_text, channel_id=channel_id, user_id=user_id, thread_ts=thread_ts)
+        slack_message_task.delay(msg_text, channel_id=channel_id, user_id=user_id, thread_ts=thread_ts)
+        # slack_message_task.apply_async(kwargs={
+        #     "message": f"Duplicate {msg_text}",
+        #     "channel_id": channel_id,
+        #     "user_id": user_id,
+        #     "thread_ts": thread_ts,
+        # },countdown=30
+        # )
         return HttpResponse("Success", status=200)
     return HttpResponse("Success", status=200)
